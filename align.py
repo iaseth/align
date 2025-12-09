@@ -5,8 +5,30 @@ import os
 
 
 
+def align_one_line(line, ch, col_lengths):
+	columns = [col.strip() for col in line.split(ch)]
+	if len(columns) == len(col_lengths):
+		columns = [c.rjust(w) for c, w in zip(columns, col_lengths)]
+		return f"{ch} ".join(columns)
+	return line
+
+
 def align_text_by_char(text, ch):
 	lines = [line.strip() for line in text.split("\n")]
+	non_empty_lines = [line for line in lines if line]
+
+	if non_empty_lines:
+		col_count = len(non_empty_lines[0].split(ch))
+		col_lengths = [0 for _ in range(col_count)]
+
+		for line in non_empty_lines:
+			columns = [col.strip() for col in line.split(ch)]
+			if len(columns) == col_count:
+				for i in range(col_count):
+					if len(columns[i]) > col_lengths[i]:
+						col_lengths[i] = len(columns[i])
+
+	lines = [align_one_line(line, ch, col_lengths) for line in text.split("\n")]
 	return "\n".join(lines)
 
 
